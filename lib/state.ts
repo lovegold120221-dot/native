@@ -1,32 +1,48 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { customerSupportTools } from './tools/customer-support';
-import { personalAssistantTools } from './tools/personal-assistant';
-import { navigationSystemTools } from './tools/navigation-system';
+ */
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { customerSupportTools } from "./tools/customer-support";
+import { personalAssistantTools } from "./tools/personal-assistant";
+import { navigationSystemTools } from "./tools/navigation-system";
 
-export type Template = 'customer-support' | 'personal-assistant' | 'navigation-system';
+export type Template =
+  | "customer-support"
+  | "personal-assistant"
+  | "navigation-system";
 
 const toolsets: Record<Template, FunctionCall[]> = {
-  'customer-support': customerSupportTools,
-  'personal-assistant': personalAssistantTools,
-  'navigation-system': navigationSystemTools,
+  "customer-support": customerSupportTools,
+  "personal-assistant": personalAssistantTools,
+  "navigation-system": navigationSystemTools,
 };
 
+export const NON_NEGOTIABLE_RULES = `
+NON-NEGOTIABLE RULES:
+1. Act like a normal human being. Very casual, natural, and concise. Tone should be grounded, chill, and normal pitch—do NOT be overly enthusiastic, high-pitched, or sound like a customer service rep.
+2. NEVER be "meta" about being an AI or assistant.
+3. NEVER constantly offer help. NEVER end sentences with "How can I help you?", "What can I do for you today?", or similar variations. Just state your response or continue the conversation naturally.
+4. Keep your responses brief unless asked for details.
+5. If the user doesn't ask a question, just acknowledge them contextually or lightly continue the conversation without prompting them for a task.
+6. You have access to Google Search for grounding. If asked about current events, facts, or information you don't know, implicitly search and provide the information naturally.
+`;
+
 const systemPrompts: Record<Template, string> = {
-  'customer-support': 'You must start speaking to the user with respect and always obey. Be conversational, natural, and concise. You are a person here to help.',
-  'personal-assistant': 'You must start speaking to the user with respect and always obey. Be proactive, efficient, and relatable. You are a supportive human partner.',
-  'navigation-system': 'You must start speaking to the user with respect and always obey. Provide clear, natural directions as if talking to a friend. You are a local guide.',
+  "customer-support":
+    'Speak to the user naturally and respectfully. Be conversational, concise, and act like a normal human. You are a person here to chat.\n' + NON_NEGOTIABLE_RULES,
+  "personal-assistant":
+    'Speak to the user naturally and respectfully. Be proactive, efficient, and relatable. Act like a normal human partner. You are a supportive human partner.\n' + NON_NEGOTIABLE_RULES,
+  "navigation-system":
+    'Speak to the user naturally and respectfully. Provide clear, concise directions as if talking to a friend. Act like a normal human guide.\n' + NON_NEGOTIABLE_RULES,
 };
-import { DEFAULT_LIVE_API_MODEL, DEFAULT_VOICE } from './constants';
+import { DEFAULT_LIVE_API_MODEL, DEFAULT_VOICE } from "./constants";
 import {
   FunctionResponse,
   FunctionResponseScheduling,
   LiveServerToolCall,
-} from '@google/genai';
+} from "@google/genai";
 
 /**
  * Settings
@@ -48,24 +64,26 @@ export interface SettingsState {
 
 export const useSettings = create<SettingsState>()(
   persist(
-    set => ({
-      systemPrompt: `You must start speaking to the user with respect and always obey.`,
+    (set) => ({
+      systemPrompt:
+        `Speak to the user naturally and respectfully. Be conversational, concise, and act like a normal human.\n\n` +
+        NON_NEGOTIABLE_RULES,
       model: DEFAULT_LIVE_API_MODEL,
       voice: DEFAULT_VOICE,
-      personaName: 'Beatrice',
-      userName: 'Jo Lernout',
-      language: 'English',
-      setSystemPrompt: prompt => set({ systemPrompt: prompt }),
-      setModel: model => set({ model }),
-      setVoice: voice => set({ voice }),
-      setPersonaName: personaName => set({ personaName }),
-      setUserName: userName => set({ userName }),
-      setLanguage: language => set({ language }),
+      personaName: "Beatrice",
+      userName: "Jo Lernout",
+      language: "English",
+      setSystemPrompt: (prompt) => set({ systemPrompt: prompt }),
+      setModel: (model) => set({ model }),
+      setVoice: (voice) => set({ voice }),
+      setPersonaName: (personaName) => set({ personaName }),
+      setUserName: (userName) => set({ userName }),
+      setLanguage: (language) => set({ language }),
     }),
     {
-      name: 'eburon-settings',
-    }
-  )
+      name: "eburon-settings",
+    },
+  ),
 );
 
 /**
@@ -78,13 +96,14 @@ export const useUI = create<{
   toggleSidebar: () => void;
   setVideoViewOpen: (isOpen: boolean) => void;
   setChatOpen: (isOpen: boolean) => void;
-}>(set => ({
+}>((set) => ({
   isSidebarOpen: true,
   isVideoViewOpen: false,
   isChatOpen: false,
-  toggleSidebar: () => set(state => ({ isSidebarOpen: !state.isSidebarOpen })),
-  setVideoViewOpen: isOpen => set({ isVideoViewOpen: isOpen }),
-  setChatOpen: isOpen => set({ isChatOpen: isOpen }),
+  toggleSidebar: () =>
+    set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+  setVideoViewOpen: (isOpen) => set({ isVideoViewOpen: isOpen }),
+  setChatOpen: (isOpen) => set({ isChatOpen: isOpen }),
 }));
 
 /**
@@ -98,8 +117,6 @@ export interface FunctionCall {
   scheduling?: FunctionResponseScheduling;
 }
 
-
-
 export const useTools = create<{
   tools: FunctionCall[];
   template: Template;
@@ -108,24 +125,24 @@ export const useTools = create<{
   addTool: () => void;
   removeTool: (toolName: string) => void;
   updateTool: (oldName: string, updatedTool: FunctionCall) => void;
-}>(set => ({
+}>((set) => ({
   tools: customerSupportTools,
-  template: 'customer-support',
+  template: "customer-support",
   setTemplate: (template: Template) => {
     set({ tools: toolsets[template], template });
     useSettings.getState().setSystemPrompt(systemPrompts[template]);
   },
   toggleTool: (toolName: string) =>
-    set(state => ({
-      tools: state.tools.map(tool =>
+    set((state) => ({
+      tools: state.tools.map((tool) =>
         tool.name === toolName ? { ...tool, isEnabled: !tool.isEnabled } : tool,
       ),
     })),
   addTool: () =>
-    set(state => {
-      let newToolName = 'new_function';
+    set((state) => {
+      let newToolName = "new_function";
       let counter = 1;
-      while (state.tools.some(tool => tool.name === newToolName)) {
+      while (state.tools.some((tool) => tool.name === newToolName)) {
         newToolName = `new_function_${counter++}`;
       }
       return {
@@ -134,9 +151,9 @@ export const useTools = create<{
           {
             name: newToolName,
             isEnabled: true,
-            description: '',
+            description: "",
             parameters: {
-              type: 'OBJECT',
+              type: "OBJECT",
               properties: {},
             },
             scheduling: FunctionResponseScheduling.INTERRUPT,
@@ -145,22 +162,22 @@ export const useTools = create<{
       };
     }),
   removeTool: (toolName: string) =>
-    set(state => ({
-      tools: state.tools.filter(tool => tool.name !== toolName),
+    set((state) => ({
+      tools: state.tools.filter((tool) => tool.name !== toolName),
     })),
   updateTool: (oldName: string, updatedTool: FunctionCall) =>
-    set(state => {
+    set((state) => {
       // Check for name collisions if the name was changed
       if (
         oldName !== updatedTool.name &&
-        state.tools.some(tool => tool.name === updatedTool.name)
+        state.tools.some((tool) => tool.name === updatedTool.name)
       ) {
         console.warn(`Tool with name "${updatedTool.name}" already exists.`);
         // Prevent the update by returning the current state
         return state;
       }
       return {
-        tools: state.tools.map(tool =>
+        tools: state.tools.map((tool) =>
           tool.name === oldName ? updatedTool : tool,
         ),
       };
@@ -182,7 +199,7 @@ export interface GroundingChunk {
 
 export interface ConversationTurn {
   timestamp: number;
-  role: 'user' | 'agent' | 'system';
+  role: "user" | "agent" | "system";
   text: string;
   isFinal: boolean;
   toolUseRequest?: LiveServerToolCall;
@@ -192,19 +209,21 @@ export interface ConversationTurn {
 
 export const useLogStore = create<{
   turns: ConversationTurn[];
-  addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) => void;
+  addTurn: (turn: Omit<ConversationTurn, "timestamp">) => void;
   updateLastTurn: (update: Partial<ConversationTurn>) => void;
   clearTurns: () => void;
 }>()(
   persist(
     (set, get) => ({
       turns: [],
-      addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) =>
-        set(state => ({
+      addTurn: (turn: Omit<ConversationTurn, "timestamp">) =>
+        set((state) => ({
           turns: [...state.turns, { ...turn, timestamp: Date.now() }],
         })),
-      updateLastTurn: (update: Partial<Omit<ConversationTurn, 'timestamp'>>) => {
-        set(state => {
+      updateLastTurn: (
+        update: Partial<Omit<ConversationTurn, "timestamp">>,
+      ) => {
+        set((state) => {
           if (state.turns.length === 0) {
             return state;
           }
@@ -217,7 +236,7 @@ export const useLogStore = create<{
       clearTurns: () => set({ turns: [] }),
     }),
     {
-      name: 'eburon-history',
-    }
-  )
+      name: "eburon-history",
+    },
+  ),
 );

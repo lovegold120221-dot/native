@@ -13,6 +13,7 @@ import {
   useTools,
   useUI,
   ConversationTurn,
+  NON_NEGOTIABLE_RULES,
 } from '@/lib/state';
 import { BIBLE_PERSONALITY } from '@/lib/prompts';
 
@@ -62,7 +63,7 @@ export default function StreamingConsole() {
 
   // Set the configuration for the Live API
   useEffect(() => {
-    const enabledTools = tools
+    const enabledTools: any[] = tools
       .filter(tool => tool.isEnabled)
       .map(tool => ({
         functionDeclarations: [
@@ -73,6 +74,9 @@ export default function StreamingConsole() {
           },
         ],
       }));
+
+    // Add Google Search grounding
+    enabledTools.push({ googleSearch: {} });
 
     // Generate a summary of history for context
     const historyContext = turns.length > 0 
@@ -97,7 +101,7 @@ export default function StreamingConsole() {
       systemInstruction: {
         parts: [
           {
-            text: BIBLE_PERSONALITY,
+            text: NON_NEGOTIABLE_RULES + '\n\n' + BIBLE_PERSONALITY,
           },
           {
             text: `Your name is ${personaName}. You are helping ${userName}. Please communicate primarily in ${language}. Handle the user with respect as "Boss".`,
