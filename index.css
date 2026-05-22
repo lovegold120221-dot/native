@@ -452,6 +452,19 @@ header {
   z-index: 999;
 }
 
+header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+header .eburon-logo {
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 header h1 {
   font-size: 16px;
 

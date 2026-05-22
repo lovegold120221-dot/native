@@ -10,8 +10,10 @@ export default function Header() {
   return (
     <header>
       <div className="header-left">
-        <h1>Beatrice AP Eburon AI</h1>
-        <p>Eburon Worker enabled. Mobile optimized experience.</p>
+        <img src="https://eburon.ai/icon-eburon.svg" alt="Eburon Logo" className="eburon-logo" />
+        <div className="header-text-container">
+          <h1>Eburon Ai</h1>
+        </div>
       </div>
       <div className="header-right">
         <button
