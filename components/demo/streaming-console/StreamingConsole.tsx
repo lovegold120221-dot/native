@@ -75,9 +75,6 @@ export default function StreamingConsole() {
         ],
       }));
 
-    // Add Google Search grounding
-    enabledTools.push({ googleSearch: {} });
-
     // Generate a summary of history for context
     const historyContext = turns.length > 0 
       ? `\n\n[CONTEXTUAL MEMORY FROM PAST CONVERSATIONS]\n${turns.slice(-30).map(t => `${t.role}: ${t.text}`).join('\n')}\n\n[INSTRUCTION]: You have access to the above history. If this is a new session (the current conversation is just starting), pick a random topic or interesting detail from the history to briefly mention or ask about in your first response to show you remember the Boss. Keep it natural and casual.`
@@ -87,8 +84,11 @@ export default function StreamingConsole() {
       ? '\n\n[SYSTEM]: The Boss has enabled video/screen sharing. You can see what the Boss sees through the video feed. Acknowledge what you see naturally. Do not refer to yourself as an AI, just act as a helpful human assistant who can now see.' 
       : '';
 
+    // Add Google Search grounding and Code Execution
+    enabledTools.push({ googleSearch: {} }, { codeExecution: {} });
+
     const config: any = {
-      responseModalities: [Modality.AUDIO],
+      responseModalities: [Modality.AUDIO, Modality.TEXT],
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {

@@ -70,4 +70,36 @@ export const customerSupportTools: FunctionCall[] = [
     isEnabled: true,
     scheduling: FunctionResponseScheduling.INTERRUPT,
   },
+  {
+    name: 'search_web',
+    description: 'Searches the web for real-time information, news, or facts.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        query: {
+          type: 'STRING',
+          description: 'The search query to look up.',
+        },
+      },
+      required: ['query'],
+    },
+    isEnabled: true,
+    scheduling: FunctionResponseScheduling.INTERRUPT,
+  },
+  {
+    name: 'fetch_url',
+    description: 'Fetches the content of a specific URL.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        url: {
+          type: 'STRING',
+          description: 'The URL to fetch content from.',
+        },
+      },
+      required: ['url'],
+    },
+    isEnabled: true,
+    scheduling: FunctionResponseScheduling.INTERRUPT,
+  },
 ];
