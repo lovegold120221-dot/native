@@ -5,6 +5,7 @@
 import { FunctionCall, useSettings, useUI, useTools } from '@/lib/state';
 import c from 'classnames';
 import { DEFAULT_LIVE_API_MODEL, AVAILABLE_VOICES, VOICE_ALIASES } from '@/lib/constants';
+import { LANGUAGES } from '@/lib/languages';
 import { useLiveAPIContext } from '@/contexts/LiveAPIContext';
 import { useState } from 'react';
 import ToolEditorModal from './ToolEditorModal';
@@ -15,8 +16,20 @@ const AVAILABLE_MODELS = [
 
 export default function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useUI();
-  const { systemPrompt, model, voice, setSystemPrompt, setModel, setVoice } =
-    useSettings();
+  const {
+    systemPrompt,
+    model,
+    voice,
+    personaName,
+    userName,
+    language,
+    setSystemPrompt,
+    setModel,
+    setVoice,
+    setPersonaName,
+    setUserName,
+    setLanguage
+  } = useSettings();
   const { tools, toggleTool, addTool, removeTool, updateTool } = useTools();
   const { connected } = useLiveAPIContext();
 
@@ -41,6 +54,36 @@ export default function Sidebar() {
         <div className="sidebar-content">
           <div className="sidebar-section">
             <fieldset disabled={connected}>
+              <label>
+                Persona Name
+                <input
+                  type="text"
+                  value={personaName}
+                  onChange={e => setPersonaName(e.target.value)}
+                  placeholder="e.g. Beatrice"
+                  className="settings-input"
+                />
+              </label>
+              <label>
+                How to call You
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={e => setUserName(e.target.value)}
+                  placeholder="e.g. Joe Lernout"
+                  className="settings-input"
+                />
+              </label>
+              <label>
+                Language
+                <select value={language} onChange={e => setLanguage(e.target.value)}>
+                  {LANGUAGES.map(lang => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <label>
                 System Prompt
                 <textarea

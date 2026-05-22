@@ -1146,16 +1146,35 @@ form button:first-of-type {
   opacity: 0.6;
 }
 
+.settings-input {
+  background: var(--gray-1000);
+  border: 1px solid var(--gray-700);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 12px;
+  font-size: 14px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--accent-blue-active);
+  box-shadow: 0 0 0 2px var(--accent-blue-active-bg);
+}
+
 .sidebar-content label {
   display: flex;
   flex-direction: column;
   gap: 8px;
   font-size: 14px;
   color: var(--gray-300);
+  margin-bottom: 4px;
 }
 
 .sidebar-content textarea,
-.sidebar-content select {
+.sidebar-content select,
+.sidebar-content input {
   border: 1px solid var(--gray-700);
   border-radius: 8px;
   padding: 12px;
@@ -1168,7 +1187,8 @@ form button:first-of-type {
 }
 
 .sidebar-content textarea:focus,
-.sidebar-content select:focus {
+.sidebar-content select:focus,
+.sidebar-content input:focus {
   outline: none;
   border-color: var(--accent-blue-active);
   box-shadow: 0 0 0 2px var(--accent-blue-active-bg);

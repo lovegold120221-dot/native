@@ -51,7 +51,7 @@ const renderContent = (text: string) => {
 
 export default function StreamingConsole() {
   const { client, setConfig } = useLiveAPIContext();
-  const { systemPrompt, voice } = useSettings();
+  const { systemPrompt, voice, personaName, userName, language } = useSettings();
   const { tools } = useTools();
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -89,6 +89,9 @@ export default function StreamingConsole() {
             text: BIBLE_PERSONALITY,
           },
           {
+            text: `Your name is ${personaName}. You are helping ${userName}. Please communicate primarily in ${language}. Handle the user with respect as "Boss".`,
+          },
+          {
             text: systemPrompt,
           },
         ],
@@ -97,7 +100,7 @@ export default function StreamingConsole() {
     };
 
     setConfig(config);
-  }, [setConfig, systemPrompt, tools, voice]);
+  }, [setConfig, systemPrompt, tools, voice, personaName, userName, language]);
 
   useEffect(() => {
     const { addTurn, updateLastTurn } = useLogStore.getState();

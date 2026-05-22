@@ -34,16 +34,28 @@ export const useSettings = create<{
   systemPrompt: string;
   model: string;
   voice: string;
+  personaName: string;
+  userName: string;
+  language: string;
   setSystemPrompt: (prompt: string) => void;
   setModel: (model: string) => void;
   setVoice: (voice: string) => void;
+  setPersonaName: (name: string) => void;
+  setUserName: (name: string) => void;
+  setLanguage: (lang: string) => void;
 }>(set => ({
   systemPrompt: `You must start speaking to the user with respect and always obey.`,
   model: DEFAULT_LIVE_API_MODEL,
   voice: DEFAULT_VOICE,
+  personaName: 'Beatrice',
+  userName: 'Jo Lernout',
+  language: 'English',
   setSystemPrompt: prompt => set({ systemPrompt: prompt }),
   setModel: model => set({ model }),
   setVoice: voice => set({ voice }),
+  setPersonaName: personaName => set({ personaName }),
+  setUserName: userName => set({ userName }),
+  setLanguage: language => set({ language }),
 }));
 
 /**
