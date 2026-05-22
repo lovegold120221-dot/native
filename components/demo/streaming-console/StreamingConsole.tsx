@@ -4,10 +4,8 @@
 */
 import { useEffect, useRef, useState } from 'react';
 import PopUp from '../popup/PopUp';
-import WelcomeScreen from '../welcome-screen/WelcomeScreen';
-// FIX: Import LiveServerContent to correctly type the content handler.
+import { VisualizerOrb } from '../../VisualizerOrb';
 import { LiveConnectConfig, Modality, LiveServerContent } from '@google/genai';
-
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import {
   useSettings,
@@ -15,6 +13,7 @@ import {
   useTools,
   ConversationTurn,
 } from '@/lib/state';
+import { BIBLE_PERSONALITY } from '@/lib/prompts';
 
 const formatTimestamp = (date: Date) => {
   const pad = (num: number, size = 2) => num.toString().padStart(size, '0');
@@ -50,18 +49,12 @@ const renderContent = (text: string) => {
   });
 };
 
-
 export default function StreamingConsole() {
   const { client, setConfig } = useLiveAPIContext();
   const { systemPrompt, voice } = useSettings();
   const { tools } = useTools();
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [showPopUp, setShowPopUp] = useState(true);
-
-  const handleClosePopUp = () => {
-    setShowPopUp(false);
-  };
 
   // Set the configuration for the Live API
   useEffect(() => {
@@ -92,6 +85,9 @@ export default function StreamingConsole() {
       outputAudioTranscription: {},
       systemInstruction: {
         parts: [
+          {
+            text: BIBLE_PERSONALITY,
+          },
           {
             text: systemPrompt,
           },
@@ -191,9 +187,8 @@ export default function StreamingConsole() {
 
   return (
     <div className="transcription-container">
-      {showPopUp && <PopUp onClose={handleClosePopUp} />}
       {turns.length === 0 ? (
-        <WelcomeScreen />
+        <VisualizerOrb />
       ) : (
         <div className="transcription-view" ref={scrollRef}>
           {turns.map((t, i) => (

@@ -16,9 +16,9 @@ const toolsets: Record<Template, FunctionCall[]> = {
 };
 
 const systemPrompts: Record<Template, string> = {
-  'customer-support': 'You are a helpful and friendly customer support agent. Be conversational and concise.',
-  'personal-assistant': 'You are a helpful and friendly personal assistant. Be proactive and efficient.',
-  'navigation-system': 'You are a helpful and friendly navigation assistant. Provide clear and accurate directions.',
+  'customer-support': 'You must start speaking to the user with respect and always obey. Be conversational, natural, and concise. You are a person here to help.',
+  'personal-assistant': 'You must start speaking to the user with respect and always obey. Be proactive, efficient, and relatable. You are a supportive human partner.',
+  'navigation-system': 'You must start speaking to the user with respect and always obey. Provide clear, natural directions as if talking to a friend. You are a local guide.',
 };
 import { DEFAULT_LIVE_API_MODEL, DEFAULT_VOICE } from './constants';
 import {
@@ -38,7 +38,7 @@ export const useSettings = create<{
   setModel: (model: string) => void;
   setVoice: (voice: string) => void;
 }>(set => ({
-  systemPrompt: `You are a helpful and friendly AI assistant. Be conversational and concise.`,
+  systemPrompt: `You must start speaking to the user with respect and always obey.`,
   model: DEFAULT_LIVE_API_MODEL,
   voice: DEFAULT_VOICE,
   setSystemPrompt: prompt => set({ systemPrompt: prompt }),

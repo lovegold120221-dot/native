@@ -26,4 +26,39 @@ export const DEFAULT_LIVE_API_MODEL =
 
 export const DEFAULT_VOICE = 'Zephyr';
 
-export const AVAILABLE_VOICES = ['Zephyr', 'Puck', 'Charon', 'Luna', 'Nova', 'Kore', 'Fenrir',	'Leda', 'Orus','Aoede','Callirrhoe','Autonoe','Enceladus','Iapetus','Umbriel','Algieba','Despina','Erinome','Algenib','Rasalgethi','Laomedeia','Achernar','Alnilam','Schedar','Gacrux','Pulcherrima','Achird',	'Zubenelgenubi','Vindemiatrix','Sadachbia','Sadaltager','Sulafat'];
+export const AVAILABLE_VOICES = ['Zephyr', 'Puck', 'Charon', 'Luna', 'Nova', 'Kore', 'Fenrir',	'Leda', 'Orus', 'Aoede', 'Callirrhoe', 'Autonoe', 'Enceladus', 'Iapetus', 'Umbriel', 'Algieba', 'Despina', 'Erinome', 'Algenib', 'Rasalgethi', 'Laomedeia', 'Achernar', 'Alnilam', 'Schedar', 'Gacrux', 'Pulcherrima', 'Achird',	'Zubenelgenubi', 'Vindemiatrix', 'Sadachbia', 'Sadaltager', 'Sulafat'];
+
+export const VOICE_ALIASES: Record<string, string> = {
+  'Zephyr': 'Superman',
+  'Puck': 'Batman',
+  'Charon': 'Wonder Woman',
+  'Luna': 'Spider-Man',
+  'Nova': 'Iron Man',
+  'Kore': 'Captain America',
+  'Fenrir': 'Thor',
+  'Leda': 'Black Widow',
+  'Orus': 'Hulk',
+  'Aoede': 'Scarlet Witch',
+  'Callirrhoe': 'Doctor Strange',
+  'Autonoe': 'Black Panther',
+  'Enceladus': 'Captain Marvel',
+  'Iapetus': 'Ant-Man',
+  'Umbriel': 'Wasp',
+  'Algieba': 'Hawkeye',
+  'Despina': 'Vision',
+  'Erinome': 'Falcon',
+  'Algenib': 'Winter Soldier',
+  'Rasalgethi': 'War Machine',
+  'Laomedeia': 'Quicksilver',
+  'Achernar': 'Star-Lord',
+  'Alnilam': 'Gamora',
+  'Schedar': 'Drax',
+  'Gacrux': 'Rocket Raccoon',
+  'Pulcherrima': 'Groot',
+  'Achird': 'Mantis',
+  'Zubenelgenubi': 'Nebula',
+  'Vindemiatrix': 'Loki',
+  'Sadachbia': 'Thanos',
+  'Sadaltager': 'Shazam',
+  'Sulafat': 'Aquaman'
+};

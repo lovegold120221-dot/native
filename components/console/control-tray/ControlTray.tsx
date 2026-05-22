@@ -164,7 +164,6 @@ function ControlTray({ children }: ControlTrayProps) {
             </span>
           </button>
         </div>
-        <span className="text-indicator">Streaming</span>
       </div>
     </section>
   );
