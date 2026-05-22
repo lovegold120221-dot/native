@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { customerSupportTools } from './tools/customer-support';
 import { personalAssistantTools } from './tools/personal-assistant';
 import { navigationSystemTools } from './tools/navigation-system';
@@ -30,7 +31,7 @@ import {
 /**
  * Settings
  */
-export const useSettings = create<{
+export interface SettingsState {
   systemPrompt: string;
   model: string;
   voice: string;
@@ -43,20 +44,29 @@ export const useSettings = create<{
   setPersonaName: (name: string) => void;
   setUserName: (name: string) => void;
   setLanguage: (lang: string) => void;
-}>(set => ({
-  systemPrompt: `You must start speaking to the user with respect and always obey.`,
-  model: DEFAULT_LIVE_API_MODEL,
-  voice: DEFAULT_VOICE,
-  personaName: 'Beatrice',
-  userName: 'Jo Lernout',
-  language: 'English',
-  setSystemPrompt: prompt => set({ systemPrompt: prompt }),
-  setModel: model => set({ model }),
-  setVoice: voice => set({ voice }),
-  setPersonaName: personaName => set({ personaName }),
-  setUserName: userName => set({ userName }),
-  setLanguage: language => set({ language }),
-}));
+}
+
+export const useSettings = create<SettingsState>()(
+  persist(
+    set => ({
+      systemPrompt: `You must start speaking to the user with respect and always obey.`,
+      model: DEFAULT_LIVE_API_MODEL,
+      voice: DEFAULT_VOICE,
+      personaName: 'Beatrice',
+      userName: 'Jo Lernout',
+      language: 'English',
+      setSystemPrompt: prompt => set({ systemPrompt: prompt }),
+      setModel: model => set({ model }),
+      setVoice: voice => set({ voice }),
+      setPersonaName: personaName => set({ personaName }),
+      setUserName: userName => set({ userName }),
+      setLanguage: language => set({ language }),
+    }),
+    {
+      name: 'eburon-settings',
+    }
+  )
+);
 
 /**
  * UI
