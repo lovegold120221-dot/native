@@ -73,10 +73,14 @@ export const useSettings = create<SettingsState>()(
  */
 export const useUI = create<{
   isSidebarOpen: boolean;
+  isVideoViewOpen: boolean;
   toggleSidebar: () => void;
+  setVideoViewOpen: (isOpen: boolean) => void;
 }>(set => ({
   isSidebarOpen: true,
+  isVideoViewOpen: false,
   toggleSidebar: () => set(state => ({ isSidebarOpen: !state.isSidebarOpen })),
+  setVideoViewOpen: isOpen => set({ isVideoViewOpen: isOpen }),
 }));
 
 /**
@@ -173,7 +177,7 @@ export interface GroundingChunk {
 }
 
 export interface ConversationTurn {
-  timestamp: Date;
+  timestamp: number;
   role: 'user' | 'agent' | 'system';
   text: string;
   isFinal: boolean;
@@ -187,22 +191,29 @@ export const useLogStore = create<{
   addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) => void;
   updateLastTurn: (update: Partial<ConversationTurn>) => void;
   clearTurns: () => void;
-}>((set, get) => ({
-  turns: [],
-  addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) =>
-    set(state => ({
-      turns: [...state.turns, { ...turn, timestamp: new Date() }],
-    })),
-  updateLastTurn: (update: Partial<Omit<ConversationTurn, 'timestamp'>>) => {
-    set(state => {
-      if (state.turns.length === 0) {
-        return state;
-      }
-      const newTurns = [...state.turns];
-      const lastTurn = { ...newTurns[newTurns.length - 1], ...update };
-      newTurns[newTurns.length - 1] = lastTurn;
-      return { turns: newTurns };
-    });
-  },
-  clearTurns: () => set({ turns: [] }),
-}));
+}>()(
+  persist(
+    (set, get) => ({
+      turns: [],
+      addTurn: (turn: Omit<ConversationTurn, 'timestamp'>) =>
+        set(state => ({
+          turns: [...state.turns, { ...turn, timestamp: Date.now() }],
+        })),
+      updateLastTurn: (update: Partial<Omit<ConversationTurn, 'timestamp'>>) => {
+        set(state => {
+          if (state.turns.length === 0) {
+            return state;
+          }
+          const newTurns = [...state.turns];
+          const lastTurn = { ...newTurns[newTurns.length - 1], ...update };
+          newTurns[newTurns.length - 1] = lastTurn;
+          return { turns: newTurns };
+        });
+      },
+      clearTurns: () => set({ turns: [] }),
+    }),
+    {
+      name: 'eburon-history',
+    }
+  )
+);

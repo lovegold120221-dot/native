@@ -11,11 +11,13 @@ import {
   useSettings,
   useLogStore,
   useTools,
+  useUI,
   ConversationTurn,
 } from '@/lib/state';
 import { BIBLE_PERSONALITY } from '@/lib/prompts';
 
-const formatTimestamp = (date: Date) => {
+const formatTimestamp = (ts: number) => {
+  const date = new Date(ts);
   const pad = (num: number, size = 2) => num.toString().padStart(size, '0');
   const hours = pad(date.getHours());
   const minutes = pad(date.getMinutes());
@@ -52,6 +54,7 @@ const renderContent = (text: string) => {
 export default function StreamingConsole() {
   const { client, setConfig } = useLiveAPIContext();
   const { systemPrompt, voice, personaName, userName, language } = useSettings();
+  const { isVideoViewOpen } = useUI();
   const { tools } = useTools();
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -70,8 +73,15 @@ export default function StreamingConsole() {
         ],
       }));
 
-    // Using `any` for config to accommodate `speechConfig`, which is not in the
-    // current TS definitions but is used in the working reference example.
+    // Generate a summary of history for context
+    const historyContext = turns.length > 0 
+      ? `\n\n[CONTEXTUAL MEMORY FROM PAST CONVERSATIONS]\n${turns.slice(-30).map(t => `${t.role}: ${t.text}`).join('\n')}\n\n[INSTRUCTION]: You have access to the above history. If this is a new session (the current conversation is just starting), pick a random topic or interesting detail from the history to briefly mention or ask about in your first response to show you remember the Boss. Keep it natural and casual.`
+      : '';
+
+    const videoContext = isVideoViewOpen 
+      ? '\n\n[SYSTEM]: The Boss has enabled video/screen sharing. You can see what the Boss sees through the video feed. Acknowledge what you see naturally. Do not refer to yourself as an AI, just act as a helpful human assistant who can now see.' 
+      : '';
+
     const config: any = {
       responseModalities: [Modality.AUDIO],
       speechConfig: {
@@ -92,7 +102,7 @@ export default function StreamingConsole() {
             text: `Your name is ${personaName}. You are helping ${userName}. Please communicate primarily in ${language}. Handle the user with respect as "Boss".`,
           },
           {
-            text: systemPrompt,
+            text: systemPrompt + historyContext + videoContext,
           },
         ],
       },
@@ -100,7 +110,7 @@ export default function StreamingConsole() {
     };
 
     setConfig(config);
-  }, [setConfig, systemPrompt, tools, voice, personaName, userName, language]);
+  }, [setConfig, systemPrompt, tools, voice, personaName, userName, language, turns, isVideoViewOpen]);
 
   useEffect(() => {
     const { addTurn, updateLastTurn } = useLogStore.getState();
@@ -205,7 +215,7 @@ export default function StreamingConsole() {
                   {t.role === 'user'
                     ? 'You'
                     : t.role === 'agent'
-                      ? 'Agent'
+                      ? personaName
                       : 'System'}
                 </div>
                 <div className="transcription-timestamp">

@@ -22,7 +22,7 @@ import cn from 'classnames';
 
 import { memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { AudioRecorder } from '../../../lib/audio-recorder';
-import { useSettings, useTools, useLogStore } from '@/lib/state';
+import { useSettings, useTools, useLogStore, useUI } from '@/lib/state';
 
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 
@@ -33,9 +33,11 @@ export type ControlTrayProps = {
 function ControlTray({ children }: ControlTrayProps) {
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
+  const [micVolume, setMicVolume] = useState(0);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
 
   const { client, connected, connect, disconnect } = useLiveAPIContext();
+  const { setVideoViewOpen } = useUI();
 
   useEffect(() => {
     // FIX: Cannot find name 'connectButton'. Did you mean 'connectButtonRef'?
@@ -60,14 +62,21 @@ function ControlTray({ children }: ControlTrayProps) {
         },
       ]);
     };
+    const onVolume = (vol: number) => {
+      setMicVolume(Math.min(1, vol * 2)); // Amplify visual scaling slightly
+    };
+    
     if (connected && !muted && audioRecorder) {
       audioRecorder.on('data', onData);
+      audioRecorder.on('volume', onVolume);
       audioRecorder.start();
     } else {
       audioRecorder.stop();
+      setMicVolume(0);
     }
     return () => {
       audioRecorder.off('data', onData);
+      audioRecorder.off('volume', onVolume);
     };
   }, [connected, client, muted, audioRecorder]);
 
@@ -127,18 +136,25 @@ function ControlTray({ children }: ControlTrayProps) {
           title={micButtonTitle}
         >
           {!muted ? (
-            <span className="material-symbols-outlined filled">mic</span>
+            <span 
+              className="material-symbols-outlined filled"
+              style={{
+                transform: `scale(${1 + micVolume * 0.8})`,
+                transition: 'transform 0.1s ease-out',
+                display: 'inline-block'
+              }}
+            >mic</span>
           ) : (
             <span className="material-symbols-outlined filled">mic_off</span>
           )}
         </button>
         <button
           className={cn('action-button')}
-          onClick={handleExportLogs}
-          aria-label="Export Logs"
-          title="Export session logs"
+          onClick={() => setVideoViewOpen(true)}
+          aria-label="Video Conversation"
+          title="Start video conversation"
         >
-          <span className="icon">download</span>
+          <span className="material-symbols-outlined filled">videocam</span>
         </button>
         <button
           className={cn('action-button')}

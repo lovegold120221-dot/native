@@ -25,6 +25,7 @@ import StreamingConsole from './components/demo/streaming-console/StreamingConso
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import { LiveAPIProvider } from './contexts/LiveAPIContext';
+import VideoView from './components/video-view/VideoView';
 
 const API_KEY = process.env.GEMINI_API_KEY as string;
 if (typeof API_KEY !== 'string') {
@@ -48,12 +49,12 @@ function App() {
           <main>
             <div className="main-app-area">
               <StreamingConsole />
-
             </div>
 
-            <ControlTray></ControlTray>
+            <ControlTray />
           </main>
         </div>
+        <VideoView />
       </LiveAPIProvider>
     </div>
   );

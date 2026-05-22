@@ -1,0 +1,131 @@
+.video-view-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-feed {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-control-button {
+  background: none;
+  border: none;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.video-control-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.video-control-button.active {
+  background: var(--accent-blue-active);
+}
+
+.video-control-button.close-button {
+  background: #ff4444;
+}
+
+.video-control-button.close-button:hover {
+  background: #cc0000;
+}
+
+.video-control-button .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.video-status {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.status-badge.live {
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.status-badge.offline {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--gray-500);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mode-label {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+    .video-controls {
+        bottom: 1rem;
+        padding: 0.75rem 1.5rem;
+        gap: 1rem;
+    }
+    
+    .video-control-button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .video-control-button .material-symbols-outlined {
+        font-size: 24px;
+    }
+}
