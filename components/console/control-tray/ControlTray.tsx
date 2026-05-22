@@ -88,6 +88,11 @@ function ControlTray({ children }: ControlTrayProps) {
     }
   };
 
+  const handleChatToggle = () => {
+    const uiState = useUI.getState();
+    uiState.setChatOpen(!uiState.isChatOpen);
+  };
+
   const handleExportLogs = () => {
     const { systemPrompt, model } = useSettings.getState();
     const { tools } = useTools.getState();
@@ -134,12 +139,31 @@ function ControlTray({ children }: ControlTrayProps) {
           className={cn('action-button mic-button')}
           onClick={handleMicClick}
           title={micButtonTitle}
+          style={{ position: 'relative' }}
         >
+          {!muted && micVolume > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(59, 130, 246, 0.4)',
+                transformOrigin: 'center center',
+                scale: 1 + micVolume * 1.5,
+                transition: 'scale 0.1s ease-out',
+                zIndex: -1
+              }}
+            />
+          )}
           {!muted ? (
             <span 
               className="material-symbols-outlined filled"
               style={{
-                transform: `scale(${1 + micVolume * 0.8})`,
+                transform: `scale(${1 + micVolume * 0.4})`,
                 transition: 'transform 0.1s ease-out',
                 display: 'inline-block'
               }}
@@ -155,6 +179,14 @@ function ControlTray({ children }: ControlTrayProps) {
           title="Start video conversation"
         >
           <span className="material-symbols-outlined filled">videocam</span>
+        </button>
+        <button
+          className={cn('action-button')}
+          onClick={handleChatToggle}
+          aria-label="Chat Console"
+          title="Toggle chat console"
+        >
+          <span className="material-symbols-outlined filled">chat</span>
         </button>
         <button
           className={cn('action-button')}

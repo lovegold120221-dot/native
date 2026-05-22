@@ -52,12 +52,13 @@ const renderContent = (text: string) => {
 };
 
 export default function StreamingConsole() {
-  const { client, setConfig } = useLiveAPIContext();
+  const { client, setConfig, connected } = useLiveAPIContext();
   const { systemPrompt, voice, personaName, userName, language } = useSettings();
-  const { isVideoViewOpen } = useUI();
+  const { isVideoViewOpen, isChatOpen } = useUI();
   const { tools } = useTools();
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [textInput, setTextInput] = useState('');
 
   // Set the configuration for the Live API
   useEffect(() => {
@@ -198,55 +199,98 @@ export default function StreamingConsole() {
     }
   }, [turns]);
 
+  const handleTextInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!textInput.trim() || !connected) return;
+
+    const text = textInput;
+    setTextInput('');
+
+    // Send the user input as a real-time message
+    client.send([{ text }]);
+
+    // Optimistically add the turn so it shows in the chat
+    useLogStore.getState().addTurn({
+      role: 'user',
+      text,
+      isFinal: true
+    });
+  };
+
   return (
-    <div className="transcription-container">
-      {turns.length === 0 ? (
-        <VisualizerOrb />
-      ) : (
-        <div className="transcription-view" ref={scrollRef}>
-          {turns.map((t, i) => (
-            <div
-              key={i}
-              className={`transcription-entry ${t.role} ${!t.isFinal ? 'interim' : ''
-                }`}
-            >
-              <div className="transcription-header">
-                <div className="transcription-source">
-                  {t.role === 'user'
-                    ? 'You'
-                    : t.role === 'agent'
-                      ? personaName
-                      : 'System'}
+    <div className={`transcription-container ${isChatOpen ? 'chat-open' : ''}`}>
+      <VisualizerOrb />
+      
+      {isChatOpen && (
+        <div className="chat-overlay">
+          <div className="transcription-view" ref={scrollRef}>
+            {turns.length === 0 ? (
+              <div className="chat-empty-state">No transcriptions yet. Start talking or typing!</div>
+            ) : (
+              turns.map((t, i) => (
+                <div
+                  key={i}
+                  className={`transcription-entry ${t.role} ${!t.isFinal ? 'interim' : ''
+                    }`}
+                >
+                  <div className="transcription-header">
+                    <div className="transcription-source">
+                      {t.role === 'user'
+                        ? 'You'
+                        : t.role === 'agent'
+                          ? personaName
+                          : 'System'}
+                    </div>
+                    <div className="transcription-timestamp">
+                      {formatTimestamp(t.timestamp)}
+                    </div>
+                  </div>
+                  <div className="transcription-text-content">
+                    {renderContent(t.text)}
+                  </div>
+                  {t.groundingChunks && t.groundingChunks.length > 0 && (
+                    <div className="grounding-chunks">
+                      <strong>Sources:</strong>
+                      <ul>
+                        {t.groundingChunks
+                          .filter(chunk => chunk.web)
+                          .map((chunk, index) => (
+                            <li key={index}>
+                              <a
+                                href={chunk.web!.uri}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {chunk.web!.title || chunk.web!.uri}
+                              </a>
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-                <div className="transcription-timestamp">
-                  {formatTimestamp(t.timestamp)}
-                </div>
-              </div>
-              <div className="transcription-text-content">
-                {renderContent(t.text)}
-              </div>
-              {t.groundingChunks && t.groundingChunks.length > 0 && (
-                <div className="grounding-chunks">
-                  <strong>Sources:</strong>
-                  <ul>
-                    {t.groundingChunks
-                      .filter(chunk => chunk.web)
-                      .map((chunk, index) => (
-                        <li key={index}>
-                          <a
-                            href={chunk.web!.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {chunk.web!.title || chunk.web!.uri}
-                          </a>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
+              ))
+            )}
+          </div>
+          <div className="chat-input-container">
+            <form onSubmit={handleTextInputSubmit} className="chat-input-form">
+              <input 
+                type="text" 
+                value={textInput}
+                onChange={e => setTextInput(e.target.value)}
+                placeholder={connected ? "Type a message..." : "Connect to chat..."}
+                disabled={!connected}
+                className="chat-text-input"
+              />
+              <button 
+                type="submit" 
+                disabled={!connected || !textInput.trim()}
+                className="chat-send-button"
+              >
+                <span className="material-symbols-outlined">send</span>
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

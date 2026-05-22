@@ -74,13 +74,17 @@ export const useSettings = create<SettingsState>()(
 export const useUI = create<{
   isSidebarOpen: boolean;
   isVideoViewOpen: boolean;
+  isChatOpen: boolean;
   toggleSidebar: () => void;
   setVideoViewOpen: (isOpen: boolean) => void;
+  setChatOpen: (isOpen: boolean) => void;
 }>(set => ({
   isSidebarOpen: true,
   isVideoViewOpen: false,
+  isChatOpen: false,
   toggleSidebar: () => set(state => ({ isSidebarOpen: !state.isSidebarOpen })),
   setVideoViewOpen: isOpen => set({ isVideoViewOpen: isOpen }),
+  setChatOpen: isOpen => set({ isChatOpen: isOpen }),
 }));
 
 /**
